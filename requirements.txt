@@ -1,0 +1,8 @@
+flask
+gunicorn
+flask-wtf
+flask-bootstrap
+pillow
+numpy
+matplotlib
+werkzeug
