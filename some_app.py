@@ -70,12 +70,10 @@ def index():
     form = ImageForm()
     orig_url = mod_url = hist_url = None
     error = None
-    
     # Генерация капчи при GET-запросе
     if request.method == 'GET':
         session['captcha_num1'] = random.randint(1, 10)
         session['captcha_num2'] = random.randint(1, 10)
-    
     if form.validate_on_submit():
         # Проверка капчи
         expected = session.get('captcha_num1', 0) + session.get('captcha_num2', 0)
@@ -83,7 +81,6 @@ def index():
             user_answer = int(form.captcha_answer.data)
         except ValueError:
             user_answer = -1
-        
         if user_answer != expected:
             error = "Неверный ответ капчи! Попробуйте ещё раз."
             session['captcha_num1'] = random.randint(1, 10)
@@ -91,7 +88,6 @@ def index():
             return render_template('index.html', form=form, error=error,
                                  captcha_num1=session['captcha_num1'],
                                  captcha_num2=session['captcha_num2'])
-        
         try:
             f = form.image.data
             filename = secure_filename(f.filename)
@@ -108,14 +104,11 @@ def index():
             hist_path = os.path.join(app.config['HISTOGRAM_FOLDER'], hist_name)
             plot_histograms((img * 255).astype(np.uint8), mod_arr, hist_path)
             hist_url = url_for('static', filename=f'histograms/{hist_name}')
-            
             # Генерируем новую капчу для следующего раза
             session['captcha_num1'] = random.randint(1, 10)
             session['captcha_num2'] = random.randint(1, 10)
-            
         except Exception as e:
             error = str(e)
-    
     # Получаем числа капчи из сессии
     captcha_num1 = session.get('captcha_num1', 5)
     captcha_num2 = session.get('captcha_num2', 3)
@@ -125,4 +118,5 @@ def index():
                           error=error, captcha_num1=captcha_num1, captcha_num2=captcha_num2)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)
