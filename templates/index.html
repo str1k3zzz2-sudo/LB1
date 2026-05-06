@@ -8,22 +8,31 @@
     <div class="row">
         <div class="col-md-6 offset-md-3">
             <h1 class="text-center">Модуляция изображения</h1>
-            <p class="text-center text-muted">Умножение пикселей на sin(x) или cos(y) с заданным периодом</p>
+            <p class="text-center text-muted">Умножение пикселей на sin(x) или cos(y)</p>
             <hr>
+            
             {% if error %}
-            <div class="alert alert-danger">Ошибка: {{ error }}</div>
+            <div class="alert alert-danger">{{ error }}</div>
             {% endif %}
             
             <form method="POST" enctype="multipart/form-data">
-                {{ form.hidden_tag() }}
+                {{ form.csrf_token }}
                 {{ wtf.form_field(form.image) }}
                 {{ wtf.form_field(form.func_type) }}
                 {{ wtf.form_field(form.direction) }}
                 {{ wtf.form_field(form.period) }}
+                
+                <!-- Капча -->
+                <div class="form-group">
+                    <label>{{ captcha_num1 }} + {{ captcha_num2 }} = ?</label>
+                    {{ form.captcha_answer(class="form-control", placeholder="Введите ответ") }}
+                </div>
+                
                 {{ wtf.form_field(form.submit) }}
             </form>
         </div>
     </div>
+    
     {% if original_img and modulated_img %}
     <div class="row mt-5">
         <div class="col-md-6">
@@ -36,11 +45,11 @@
         </div>
     </div>
     {% endif %}
+    
     {% if histogram_img %}
     <div class="row mt-5">
         <div class="col-md-12">
             <h3 class="text-center">Гистограммы распределения цветов</h3>
-            <p class="text-muted text-center">Верхний ряд - исходное, нижний ряд - после модуляции</p>
             <img src="{{ histogram_img }}" class="img-fluid" style="max-width:100%">
         </div>
     </div>
